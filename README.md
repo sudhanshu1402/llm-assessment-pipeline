@@ -1,5 +1,7 @@
 # LLM Assessment Pipeline
 
+[![CI](https://github.com/sudhanshu1402/llm-assessment-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/sudhanshu1402/llm-assessment-pipeline/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 A fault-tolerant LLM orchestration engine built on LangChain that generates structured assessment content using a dual-model architecture (OpenAI GPT-4o + Google Gemini fallback) with Zod-validated output schemas.
 
 ## Problem
