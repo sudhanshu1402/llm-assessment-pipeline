@@ -1,7 +1,7 @@
 {
   "name": "llm-assessment-pipeline",
   "version": "1.0.0",
-  "description": "> Asynchronous orchestration pipeline utilizing LangChain, GPT-4, and Gemini for multi-lingual content validation.",
+  "description": "LangChain demo that generates Zod-validated assessment questions with dual-model failover (GPT-4o-mini primary, Gemini 1.5 Flash fallback).",
   "main": "index.js",
   "scripts": {
     "start": "node dist/index.js",

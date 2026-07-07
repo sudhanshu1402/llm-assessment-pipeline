@@ -31,8 +31,10 @@ const processJobQueue = async () => {
       console.log(JSON.stringify(assessmentItem, null, 2));
       
     } catch (error) {
-      // Re-queue or Dead Letter Queue routing happens here
-      console.error(`❌ Job [${job.jobId}] Failed fundamentally. Moving to DLQ.`, error);
+      // Both the primary and fallback models failed. This demo has no real
+      // queue, so the job is logged and skipped here; a production worker
+      // would route it to a dead-letter queue for later inspection/replay.
+      console.error(`❌ Job [${job.jobId}] failed after primary + fallback. Logging and skipping.`, error);
     }
   }
   

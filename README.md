@@ -2,7 +2,9 @@
 
 [![CI](https://github.com/sudhanshu1402/llm-assessment-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/sudhanshu1402/llm-assessment-pipeline/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-A fault-tolerant LLM orchestration engine built on LangChain that generates structured assessment content using a dual-model architecture (OpenAI GPT-4o + Google Gemini fallback) with Zod-validated output schemas.
+An LLM orchestration demo built on LangChain that generates structured assessment content using a dual-model failover architecture (OpenAI GPT-4o-mini primary + Google Gemini fallback) with Zod-validated output schemas.
+
+> **Scope:** a focused reference implementation of the *failover + schema-validation* pattern. The dual-model failover and Zod parsing are real; the "job queue" is a mock in-process loop (`src/index.ts`) and persistence is simulated with a console log. Wire it to a real queue (e.g. [distributed-queue-engine](https://github.com/sudhanshu1402/distributed-queue-engine)) and a database to run it for real.
 
 ## Problem
 
@@ -14,13 +16,13 @@ This pipeline uses dual-model failover: primary generation via GPT-4o-mini with 
 
 ```mermaid
 graph TB
-    Queue[Job Queue] -->|topic, difficulty, language| Orchestrator[Assessment Orchestrator]
+    Queue[Mock Job Loop] -->|topic, difficulty, language| Orchestrator[Assessment Orchestrator]
     Orchestrator -->|RunnableSequence| Primary[GPT-4o-mini - Primary]
     Primary -->|structured output| Parser[Zod Schema Parser]
-    Primary -.->|on failure| Fallback[Gemini 1.5 Flash - Fallback]
+    Primary -.->|error or invalid output| Fallback[Gemini 1.5 Flash - Fallback]
     Fallback -->|structured output| Parser
-    Parser -->|validated| DB[(Database)]
-    Parser -.->|validation failed| DLQ[Dead Letter Queue]
+    Parser -->|validated| DB[(Persist · demo logs JSON)]
+    Fallback -.->|both models failed| Caller[Caller catch · logs + skips]
 
     style Orchestrator fill:#2d3748,color:#fff
     style Primary fill:#10a37f,color:#fff
@@ -73,7 +75,7 @@ graph TB
 1. **GPT-4o transient error** -- 2 automatic retries with LangChain's built-in retry logic
 2. **GPT-4o persistent failure** -- entire chain re-executes against Gemini 1.5 Flash
 3. **Malformed LLM output** -- Zod parser throws before data reaches any persistence layer
-4. **Both models fail** -- error propagated to caller for DLQ routing
+4. **Both models fail** -- error propagates to the job loop's `catch`, which logs and skips the job (a production worker would route it to a dead-letter queue)
 5. **Rate limiting** -- low temperature + retries absorb most transient 429s; failover handles prolonged outages
 
 ## Scale Considerations
