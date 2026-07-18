@@ -3,7 +3,7 @@ import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
 import { PromptTemplate } from '@langchain/core/prompts';
 import { RunnableSequence } from '@langchain/core/runnables';
 import { StructuredOutputParser } from '@langchain/core/output_parsers';
-import { AssessmentQuestionSchema, AssessmentQuestion } from './schema';
+import { AssessmentQuestionSchema, AssessmentQuestion, Difficulty } from './schema';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -32,6 +32,7 @@ You are an expert technical assessor creating questions for a high-stakes develo
 Create one multiple-choice question assessing the following topic: {topic}.
 The target difficulty is: {difficulty}.
 The target language is: {language}.
+Provide exactly 4 options, and mark exactly one of them as correct (isCorrect: true).
 
 {format_instructions}
 `);
@@ -48,11 +49,12 @@ export class AssessmentOrchestrator {
   }
 
   /**
-   * Generates content using OpenAI, and if it completely fails (e.g. rate limit),
-   * falls back to the Gemini implementation. Ideally, in production this is a Dual-Model 
-   * architecture where Gemini independently validates the output of GPT-4.
+   * Generates content using OpenAI, and if the primary chain fails outright
+   * (e.g. rate limit, timeout, or output that fails Zod validation), the whole
+   * chain re-runs against Gemini. This is sequential failover, not parallel
+   * consensus — only one model's output is ever returned.
    */
-  async generateQuestion(topic: string, difficulty: string, language: string): Promise<AssessmentQuestion> {
+  async generateQuestion(topic: string, difficulty: Difficulty, language: string): Promise<AssessmentQuestion> {
     console.log(`[Pipeline] Orchestrating generation for: ${topic} (${difficulty}, ${language})`);
     
     try {

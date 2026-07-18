@@ -127,6 +127,28 @@ describe('AssessmentQuestionSchema - options constraints', () => {
     );
     expect(result.success).toBe(false);
   });
+
+  it('rejects options with no correct answer', () => {
+    const opts = makeValidQuestion().options.map((o) => ({ ...o, isCorrect: false }));
+    const result = AssessmentQuestionSchema.safeParse(
+      makeValidQuestion({ options: opts })
+    );
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects options with more than one correct answer', () => {
+    const opts = makeValidQuestion().options.map((o) => ({ ...o }));
+    (opts[1] as Record<string, unknown>).isCorrect = true; // now a and b both correct
+    const result = AssessmentQuestionSchema.safeParse(
+      makeValidQuestion({ options: opts })
+    );
+    expect(result.success).toBe(false);
+  });
+
+  it('accepts options with exactly one correct answer', () => {
+    const result = AssessmentQuestionSchema.safeParse(makeValidQuestion());
+    expect(result.success).toBe(true);
+  });
 });
 
 describe('AssessmentQuestionSchema - difficulty enum', () => {
