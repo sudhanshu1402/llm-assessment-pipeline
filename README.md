@@ -62,7 +62,7 @@ Wording varies per generation. The shape doesn't, because the parser won't let i
 
 ## Run it
 
-Node 22.
+Node 20.19 or newer.
 
 ```bash
 npm install

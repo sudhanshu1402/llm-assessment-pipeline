@@ -2,15 +2,25 @@
   "name": "llm-assessment-pipeline",
   "version": "1.0.0",
   "description": "LangChain demo that generates Zod-validated assessment questions with dual-model failover (GPT-4o-mini primary, Gemini 1.5 Flash fallback).",
-  "main": "index.js",
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
   "scripts": {
     "start": "node dist/index.js",
     "dev": "nodemon -w src --ext ts --exec ts-node src/index.ts",
     "build": "tsc",
     "test": "vitest run"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "langchain",
+    "llm",
+    "zod",
+    "fault-tolerant",
+    "openai",
+    "gemini",
+    "typescript"
+  ],
+  "author": "Sudhanshu Singh",
   "license": "MIT",
   "dependencies": {
     "@langchain/core": "^1.2.3",
