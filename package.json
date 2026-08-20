@@ -11,7 +11,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@langchain/core": "^1.2.3",
     "@langchain/google-genai": "^2.2.0",

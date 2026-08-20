@@ -8,19 +8,27 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
+// Per-attempt cap. openai-node defaults to 600s, so without this a hung primary
+// plus maxRetries: 2 can stall for half an hour before the fallback is reached.
+const REQUEST_TIMEOUT_MS = 30_000;
+
 // 1. Define Models
 // Primary Model: High reasoning capability for generating complex domains
 const primaryLlm = new ChatOpenAI({
-  modelName: 'gpt-4o-mini', 
+  modelName: 'gpt-4o-mini',
   temperature: 0.2,
   maxRetries: 2,
+  timeout: REQUEST_TIMEOUT_MS,
 });
 
-// Fallback / Validation Model: Fast generation, cheaper cross-checking
+// Fallback / Validation Model: Fast generation, cheaper cross-checking.
+// @langchain/google-genai reads GOOGLE_API_KEY only and throws in its
+// constructor if unset, so accept the GEMINI_API_KEY name the README documents.
 const validationLlm = new ChatGoogleGenerativeAI({
   model: 'gemini-1.5-flash',
   temperature: 0.1,
   maxRetries: 2,
+  apiKey: process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY,
 });
 
 // 2. Define Output Parser mapping to Zod Schema
@@ -79,12 +87,17 @@ export class AssessmentOrchestrator {
         parser,
       ]);
       
-      const result = await fallbackChain.invoke({
-        topic,
-        difficulty,
-        language,
-        format_instructions: parser.getFormatInstructions(),
-      });
+      // ChatGoogleGenerativeAI exposes no `timeout` field, so the cap comes from
+      // the run config instead.
+      const result = await fallbackChain.invoke(
+        {
+          topic,
+          difficulty,
+          language,
+          format_instructions: parser.getFormatInstructions(),
+        },
+        { signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) }
+      );
       
       console.log(`[Pipeline] Successfully recovered via Gemini`);
       return result;
