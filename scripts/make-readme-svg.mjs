@@ -122,10 +122,11 @@ function testRun() {
     },
   );
   const text = plain(raw);
+  // Non-TTY vitest logs a per-file line carrying a duration, so only the totals are reproducible.
   const lines = text
     .split('\n')
     .map((line) => line.replaceAll(ROOT, PKG_NAME).trimEnd())
-    .filter((line) => line.length > 0 && !/^\s*(Start at|Duration)\b/.test(line));
+    .filter((line) => /^\s*(RUN\s+v|(Test Files|Tests)\s)/.test(line));
   if (!lines.length) throw new Error(`no test output captured:\n${text}`);
   return lines;
 }
