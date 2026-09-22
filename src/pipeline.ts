@@ -47,7 +47,7 @@ Provide exactly 4 options, and mark exactly one of them as correct (isCorrect: t
 
 export class AssessmentOrchestrator {
   private primaryChain: RunnableSequence;
-  
+
   constructor() {
     this.primaryChain = RunnableSequence.from([
       generationPrompt,
@@ -60,11 +60,11 @@ export class AssessmentOrchestrator {
    * Generates content using OpenAI, and if the primary chain fails outright
    * (e.g. rate limit, timeout, or output that fails Zod validation), the whole
    * chain re-runs against Gemini. This is sequential failover, not parallel
-   * consensus — only one model's output is ever returned.
+   * consensus - only one model's output is ever returned.
    */
   async generateQuestion(topic: string, difficulty: Difficulty, language: string): Promise<AssessmentQuestion> {
     console.log(`[Pipeline] Orchestrating generation for: ${topic} (${difficulty}, ${language})`);
-    
+
     try {
       // Execute the primary generating sequence
       const result = await this.primaryChain.invoke({
@@ -73,20 +73,20 @@ export class AssessmentOrchestrator {
         language,
         format_instructions: parser.getFormatInstructions(),
       });
-      
+
       console.log(`[Pipeline] Successfully generated via GPT-4`);
       return result;
-      
+
     } catch (primaryError) {
       console.warn(`[Pipeline] Primary generation failed. Routing to Gemini fallback...`, primaryError);
-      
+
       // Fallback Routing Sequence
       const fallbackChain = RunnableSequence.from([
         generationPrompt,
         validationLlm,
         parser,
       ]);
-      
+
       // ChatGoogleGenerativeAI exposes no `timeout` field, so the cap comes from
       // the run config instead.
       const result = await fallbackChain.invoke(
@@ -98,7 +98,7 @@ export class AssessmentOrchestrator {
         },
         { signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) }
       );
-      
+
       console.log(`[Pipeline] Successfully recovered via Gemini`);
       return result;
     }
