@@ -126,7 +126,11 @@ function testRun() {
   const lines = text
     .split('\n')
     .map((line) => line.replaceAll(ROOT, PKG_NAME).trimEnd())
-    .filter((line) => /^\s*(RUN\s+v|(Test Files|Tests)\s)/.test(line));
+    .filter((line) => /^\s*(RUN\s+v|(Test Files|Tests)\s)/.test(line))
+    // Drop vitest's own version from the RUN line. It is not what the picture is about, and
+    // leaving it in means every vitest bump regenerates a different SVG, so the committed one
+    // goes stale and the "README diagrams are current" check fails on an unrelated PR.
+    .map((line) => line.replace(/^(\s*RUN\s+)v\S+\s+/, '$1'));
   if (!lines.length) throw new Error(`no test output captured:\n${text}`);
   return lines;
 }
