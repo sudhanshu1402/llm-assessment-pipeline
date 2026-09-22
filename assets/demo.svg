@@ -9,7 +9,7 @@
     <text x="26" y="98" fill="#f85149">two correct options of 4: rejected: exactly one option must be marked isCorrect</text>
     <text x="26" y="120" fill="#c9d1d9"></text>
     <text x="26" y="142" fill="#e6edf3">$ npm test</text>
-    <text x="26" y="164" fill="#7d8590"> RUN  v4.1.10 llm-assessment-pipeline</text>
+    <text x="26" y="164" fill="#7d8590"> RUN  v4.1.11 llm-assessment-pipeline</text>
     <text x="26" y="186" fill="#3fb950"> Test Files  2 passed (2)</text>
     <text x="26" y="208" fill="#3fb950">      Tests  30 passed (30)</text>
   </g>
