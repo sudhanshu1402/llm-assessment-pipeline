@@ -1,14 +1,10 @@
-<h1>
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/sudhanshu1402/llm-assessment-pipeline/main/assets/banner-dark.svg" />
-  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/sudhanshu1402/llm-assessment-pipeline/main/assets/banner-light.svg" />
-  <img src="https://raw.githubusercontent.com/sudhanshu1402/llm-assessment-pipeline/main/assets/banner-dark.svg" width="100%" alt="llm-assessment-pipeline: schema-checked model output with provider failover. reference implementation, mock queue. The failure it exists for: almost-valid JSON poisons the store. Zod parses it before it counts as done." />
-</picture>
-</h1>
+<div align="center">
+
+<img src="https://raw.githubusercontent.com/sudhanshu1402/llm-assessment-pipeline/main/assets/hero.svg" width="100%" alt="llm-assessment-pipeline as a git graph: a job goes to GPT-4o-mini, which fails; a fallback branch re-runs the same chain on Gemini 1.5 Flash; Zod checks 4 options with exactly one correct; then it is stored. Two or zero correct options are rejected at the gate." />
 
 [![CI](https://github.com/sudhanshu1402/llm-assessment-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/sudhanshu1402/llm-assessment-pipeline/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-![llm-assessment-pipeline at a glance: 2 providers in sequence, Zod validation before persistence, exactly 1 correct option of 4 required, 30,000 millisecond timeout before the fallback runs](https://raw.githubusercontent.com/sudhanshu1402/llm-assessment-pipeline/main/assets/glance.svg)
+</div>
 
 Generates multiple-choice questions from an LLM (LangChain + OpenAI + Gemini), validates them against a strict Zod schema, and fails over to a second provider when the primary breaks. The failover and schema validation are real, test-covered code paths. The job queue is a mock in-process loop and persistence is a console log. Point it at a real queue like [distributed-queue-engine](https://github.com/sudhanshu1402/distributed-queue-engine) and a database to run it for real.
 
@@ -83,6 +79,10 @@ const question = await orchestrator.generateQuestion(
 |---|---|
 | [docs/DEEPDIVE.md](docs/DEEPDIVE.md) | design decisions, deploy, known gaps |
 | [System Design Portal](https://sudhanshu1402.github.io/system-design-portal/llm-pipeline) | full write-up |
+
+---
+
+<sub>Part of [sudhanshu1402](https://github.com/sudhanshu1402)'s work: [keel](https://github.com/sudhanshu1402/keel) · [nocap](https://github.com/sudhanshu1402/nocap) · [receipts](https://github.com/sudhanshu1402/receipts) · [enterprise-auth-stack](https://github.com/sudhanshu1402/enterprise-auth-stack) · [distributed-queue-engine](https://github.com/sudhanshu1402/distributed-queue-engine) · [multi-region-mongo-patterns](https://github.com/sudhanshu1402/multi-region-mongo-patterns) · [otel-sdk-node](https://github.com/sudhanshu1402/otel-sdk-node) · **llm-assessment-pipeline**. Write-ups on the [System Design Portal](https://sudhanshu1402.github.io/system-design-portal/).</sub>
 
 ## License
 
